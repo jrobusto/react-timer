@@ -1,32 +1,62 @@
+"use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 function ProgressBar(props) {
-  return (<div className="mb-1 progress">
-                  <div className="progress-bar" role="progressbar" style={{width: props.percentage / 10 + "%"}} aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-              </div>);
+    return React.createElement(
+        "div",
+        { className: "mb-1 progress" },
+        React.createElement("div", { className: "progress-bar", role: "progressbar", style: { width: props.percentage / 10 + "%" }, "aria-valuenow": "0", "aria-valuemin": "0", "aria-valuemax": "100" })
+    );
 }
 
 function Timestamp(props) {
-    return <li className="list-group-item"><strong>{props.label}</strong>: {props.time.toLocaleTimeString()}</li>;
+    return React.createElement(
+        "li",
+        { className: "list-group-item" },
+        React.createElement(
+            "strong",
+            null,
+            props.label
+        ),
+        ": ",
+        props.time.toLocaleTimeString()
+    );
 }
 
 function TimestampList(props) {
-    const stamps = props.timestamps;
-    const listItems = stamps.map(stamp =>
-        <Timestamp label={stamp.label} time={stamp.time} />
-    );
+    var stamps = props.timestamps;
+    var listItems = stamps.map(function (stamp) {
+        return React.createElement(Timestamp, { label: stamp.label, time: stamp.time });
+    });
 
-    return <ul className="list-group">{listItems}</ul>;
+    return React.createElement(
+        "ul",
+        { className: "list-group" },
+        listItems
+    );
 }
 
-function padTime(number, length = 2) {
+function padTime(number) {
+    var length = arguments.length <= 1 || arguments[1] === undefined ? 2 : arguments[1];
+
     return String(number).padStart(length, "0");
 }
-class Timer extends React.Component {
-    constructor(props) {
-        super(props);
-        this.audio = new Audio(
-            "https://freesound.org/people/ShadyDave/sounds/273205/download/273205__shadydave__cloudy-day-loop.wav"
-        );
-        this.state = {
+
+var Timer = function (_React$Component) {
+    _inherits(Timer, _React$Component);
+
+    function Timer(props) {
+        _classCallCheck(this, Timer);
+
+        var _this = _possibleConstructorReturn(this, _React$Component.call(this, props));
+
+        _this.audio = new Audio("https://freesound.org/people/ShadyDave/sounds/273205/download/273205__shadydave__cloudy-day-loop.wav");
+        _this.state = {
             on: true,
             active: false,
             accumulated: 0,
@@ -38,24 +68,30 @@ class Timer extends React.Component {
             time: new Date(20 * 60 * 1000),
             total: (20 + 10 + 10 + 10 + 10) * 60 * 1000
         };
-        this.toggle = this.toggle.bind(this);
+        _this.toggle = _this.toggle.bind(_this);
+        return _this;
     }
 
-    playSound() {
+    Timer.prototype.playSound = function playSound() {
+        var _this2 = this;
+
         this.audio.play();
-        setTimeout(() => this.audio.pause(), 4000);
-    }
+        setTimeout(function () {
+            return _this2.audio.pause();
+        }, 4000);
+    };
 
-    diffTime(prevState) {
+    Timer.prototype.diffTime = function diffTime(prevState) {
         if (prevState.time != null) {
-          var currTime = new Date();
-          var dt = currTime.getTime() - prevState.lastTimestamp.getTime();
-          return prevState.time.getTime() - dt;
+            var currTime = new Date();
+            var dt = currTime.getTime() - prevState.lastTimestamp.getTime();
+            return prevState.time.getTime() - dt;
         } else {
-          return -1
+            return -1;
         }
-    }
-    tick() {
+    };
+
+    Timer.prototype.tick = function tick() {
         this.setState(function (prevState, props) {
             var stage = prevState.stage;
             var currTime = new Date();
@@ -106,84 +142,118 @@ class Timer extends React.Component {
                 }
             }
         });
-    }
+    };
 
-    componentDidMount() {
+    Timer.prototype.componentDidMount = function componentDidMount() {
         /*this.timerID = setInterval(
         () => this.tick(),
         this.props.tickRate
-      )*/
-    }
+        )*/
+    };
 
-    componentWillUnmount() {
+    Timer.prototype.componentWillUnmount = function componentWillUnmount() {
         clearInterval(this.timerID);
-    }
+    };
 
-    toggle() {
-        this.setState(prevState => {
+    Timer.prototype.toggle = function toggle() {
+        var _this3 = this;
+
+        this.setState(function (prevState) {
             var currTime = new Date();
             var newTime = currTime;
 
             if (prevState.active) {
-                var newTime = this.diffTime(prevState);
-                clearInterval(this.timerID);
+                var newTime = _this3.diffTime(prevState);
+                clearInterval(_this3.timerID);
                 return {
                     lastTimestamp: currTime,
                     active: !prevState.active
                 };
             } else {
-                clearInterval(this.timerID);
-                this.timerID = setInterval(() => this.tick(), this.props.tickRate);
+                clearInterval(_this3.timerID);
+                _this3.timerID = setInterval(function () {
+                    return _this3.tick();
+                }, _this3.props.tickRate);
                 console.log('Started');
                 return { lastTimestamp: currTime, active: !prevState.active };
             }
         });
-    }
+    };
 
-    render() {
-          const hours = padTime(this.state.time.getUTCHours());
-          const minutes = padTime(this.state.time.getUTCMinutes());
-          const seconds = padTime(this.state.time.getUTCSeconds());
-          const milliseconds = padTime(this.state.time.getUTCMilliseconds(), 4);
-        return (
-            <div>
-              <div className="row">
-                  <div className="col">
-                      <div className="jumbotron">
-                          <h1>
-                              <span className={"badge " + (this.state.on && !this.state.finished ? "badge-success" : "badge-danger") }>
-                                {this.state.finished ? "FINISHED" : this.state.on ? "ON" : "OFF" }
-                              </span>            
-                          </h1>
-                        <ProgressBar percentage={this.state.percentage} />
-                          <div className="card card-outline-secondary">
-                              <h1 className="display-2 border card-block card-title text-center">
-                                  {minutes}m {seconds}s
-                  </h1>
-                          </div>
-                          <div className="d-flex flex-row-reverse pt-2">
-                              <button
-                                  type="button"
-                                  className="btn btn-primary btn-lg"
-                                  onClick={this.toggle}
-                              >
-                                  {this.state.active ? "Pause" : "Start"}
-                              </button>
-                          </div>
-                      </div>
-                  </div>
-                  <div className="mt-5 pt-2 col">
-                      <h1>Timestamps</h1>
-                      <TimestampList timestamps={this.state.timestamps} />
-                  </div>
-              </div>              
-            </div>
+    Timer.prototype.render = function render() {
+        var hours = padTime(this.state.time.getUTCHours());
+        var minutes = padTime(this.state.time.getUTCMinutes());
+        var seconds = padTime(this.state.time.getUTCSeconds());
+        var milliseconds = padTime(this.state.time.getUTCMilliseconds(), 4);
+        return React.createElement(
+            "div",
+            null,
+            React.createElement(
+                "div",
+                { className: "row" },
+                React.createElement(
+                    "div",
+                    { className: "col" },
+                    React.createElement(
+                        "div",
+                        { className: "jumbotron" },
+                        React.createElement(
+                            "h1",
+                            null,
+                            React.createElement(
+                                "span",
+                                { className: "badge " + (this.state.on && !this.state.finished ? "badge-success" : "badge-danger") },
+                                this.state.finished ? "FINISHED" : this.state.on ? "ON" : "OFF"
+                            )
+                        ),
+                        React.createElement(ProgressBar, { percentage: this.state.percentage }),
+                        React.createElement(
+                            "div",
+                            { className: "card card-outline-secondary" },
+                            React.createElement(
+                                "h1",
+                                { className: "display-2 border card-block card-title text-center" },
+                                minutes,
+                                "m ",
+                                seconds,
+                                "s"
+                            )
+                        ),
+                        React.createElement(
+                            "div",
+                            { className: "d-flex flex-row-reverse pt-2" },
+                            React.createElement(
+                                "button",
+                                {
+                                    type: "button",
+                                    className: "btn btn-primary btn-lg",
+                                    onClick: this.toggle
+                                },
+                                this.state.active ? "Pause" : "Start"
+                            )
+                        )
+                    )
+                ),
+                React.createElement(
+                    "div",
+                    { className: "mt-5 pt-2 col" },
+                    React.createElement(
+                        "h1",
+                        null,
+                        "Timestamps"
+                    ),
+                    React.createElement(TimestampList, { timestamps: this.state.timestamps })
+                )
+            )
         );
-    }
-}
-const app = (
-    <div>
-        <Timer tickRate="100" />
-    </div>
+    };
+
+    return Timer;
+}(React.Component);
+
+var app = React.createElement(
+    "div",
+    null,
+    React.createElement(Timer, { tickRate: "100" })
 );
 ReactDOM.render(app, document.getElementById("root"));
