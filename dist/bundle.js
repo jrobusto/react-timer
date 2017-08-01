@@ -9754,267 +9754,305 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 
 
+function diffTime(prevState) {
+  if (prevState.time != null) {
+    var currTime = new Date();
+    var dt = currTime.getTime() - prevState.lastTimestamp.getTime();
+    return prevState.time.getTime() - dt;
+  }
+  return -1;
+}
+
 function ProgressBar(props) {
-    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'div',
-        { className: 'mb-1 progress' },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', { className: 'progress-bar', role: 'progressbar', style: { width: props.percentage / 10 + "%" }, 'aria-valuenow': '0', 'aria-valuemin': '0', 'aria-valuemax': '100' })
-    );
+  return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+    'div',
+    { className: 'mb-1 progress' },
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', { className: 'progress-bar', role: 'progressbar', style: { width: props.percentage / 10 + '%' }, 'aria-valuenow': '0', 'aria-valuemin': '0', 'aria-valuemax': '100' })
+  );
+}
+
+function ToggleButton(props) {
+  return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+    'button',
+    {
+      type: 'button',
+      className: 'btn btn-primary btn-lg',
+      onClick: props.toggle
+    },
+    props.active ? 'Pause' : 'Start'
+  );
+}
+
+function ResetButton(props) {
+  return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+    'button',
+    {
+      type: 'button',
+      className: 'btn btn-secondary btn-lg',
+      onClick: props.reset
+    },
+    'Reset'
+  );
+}
+
+function ActiveLabel(props) {
+  var label = void 0;
+  if (props.finished) {
+    label = 'FINISHED';
+  } else if (props.on) {
+    label = 'ON';
+  } else {
+    label = 'OFF';
+  }
+  return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+    'span',
+    { className: 'badge ' + (props.on && !props.finished ? 'badge-success' : 'badge-danger') },
+    label
+  );
 }
 
 function Timestamp(props) {
-    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'li',
-        { className: 'list-group-item' },
-        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-            'strong',
-            null,
-            props.label
-        ),
-        ': ',
-        props.time.toLocaleTimeString()
-    );
+  return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+    'li',
+    { className: 'list-group-item' },
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'strong',
+      null,
+      props.label
+    ),
+    ': ',
+    props.time.toLocaleTimeString()
+  );
 }
 
 function TimestampList(props) {
-    var stamps = props.timestamps;
-    var listItems = stamps.map(function (stamp, index) {
-        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Timestamp, { key: index, label: stamp.label, time: stamp.time });
-    });
+  var stamps = props.timestamps;
+  var listItems = stamps.map(function (stamp, index) {
+    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Timestamp, { key: index, label: stamp.label, time: stamp.time });
+  });
 
-    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'ul',
-        { className: 'list-group' },
-        listItems
-    );
+  return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+    'ul',
+    { className: 'list-group' },
+    listItems
+  );
 }
 
 function padTime(number) {
-    var length = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 2;
+  var length = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 2;
 
-    return String(number).padStart(length, "0");
+  return String(number).padStart(length, '0');
 }
 
 var Timer = function (_React$Component) {
-    _inherits(Timer, _React$Component);
+  _inherits(Timer, _React$Component);
 
-    function Timer(props) {
-        _classCallCheck(this, Timer);
+  function Timer(props) {
+    _classCallCheck(this, Timer);
 
-        var _this = _possibleConstructorReturn(this, (Timer.__proto__ || Object.getPrototypeOf(Timer)).call(this, props));
+    var _this = _possibleConstructorReturn(this, (Timer.__proto__ || Object.getPrototypeOf(Timer)).call(this, props));
 
-        _this.audio = new Audio("273205__shadydave__cloudy-day-loop.wav");
-        _this.state = {
-            on: true,
-            active: false,
-            accumulated: 0,
-            complete: false,
-            phases: [20, 10, 10, 10, 10],
-            stage: 0,
-            lastTimestamp: new Date(),
-            timestamps: [],
-            time: new Date(20 * 60 * 1000),
-            total: (20 + 10 + 10 + 10 + 10) * 60 * 1000
-        };
-        _this.toggle = _this.toggle.bind(_this);
-        return _this;
+    _this.audio = new Audio('273205__shadydave__cloudy-day-loop.wav');
+    _this.state = {
+      on: true,
+      active: false,
+      accumulated: 0,
+      complete: false,
+      phases: [20, 10, 10, 10, 10],
+      stage: 0,
+      lastTimestamp: new Date(),
+      timestamps: [],
+      time: new Date(20 * 60 * 1000),
+      total: (20 + 10 + 10 + 10 + 10) * 60 * 1000
+    };
+    _this.toggle = _this.toggle.bind(_this);
+    _this.reset = _this.reset.bind(_this);
+    return _this;
+  }
+
+  _createClass(Timer, [{
+    key: 'playSound',
+    value: function playSound() {
+      var _this2 = this;
+
+      this.audio.play();
+      setTimeout(function () {
+        return _this2.audio.pause();
+      }, 4000);
     }
+  }, {
+    key: 'tick',
+    value: function tick() {
+      var _this3 = this;
 
-    _createClass(Timer, [{
-        key: 'playSound',
-        value: function playSound() {
-            var _this2 = this;
+      this.setState(function (prevState) {
+        var stage = prevState.stage;
+        var currTime = new Date();
+        var newTime = diffTime(prevState);
+        var dt = prevState.time.getTime() - newTime;
+        var accumulated = prevState.accumulated + dt;
+        var percentage = Math.round(1000 * accumulated / prevState.total);
+        var timestamps = prevState.timestamps;
+        if (!prevState.timestamps.length) {
+          timestamps.push({ label: 'Begin', time: currTime });
+        }
+        if (prevState.time != null && newTime > 0) {
+          return {
+            accumulated: accumulated,
+            percentage: percentage,
+            timestamps: timestamps,
+            lastTimestamp: currTime,
+            time: new Date(newTime)
+          };
+        }
+        stage += 1;
+        newTime = prevState.phases[stage] * 60 * 1000 + newTime;
+        if (newTime) {
+          var newLabel = prevState.on ? 'Stop: ' : 'Start: ';
+          timestamps.push({ label: newLabel, time: currTime });
+          _this3.playSound();
+          return {
+            accumulated: accumulated,
+            percentage: percentage,
+            timestamps: timestamps,
+            on: !prevState.on,
+            phases: prevState.phases,
+            stage: stage,
+            lastTimestamp: currTime,
+            time: new Date(newTime)
+          };
+        }
+        timestamps.push({ label: 'End: ', time: currTime });
+        clearInterval(_this3.timerID);
+        _this3.playSound();
 
-            this.audio.play();
-            setTimeout(function () {
-                return _this2.audio.pause();
-            }, 4000);
-        }
-    }, {
-        key: 'diffTime',
-        value: function diffTime(prevState) {
-            if (prevState.time != null) {
-                var currTime = new Date();
-                var dt = currTime.getTime() - prevState.lastTimestamp.getTime();
-                return prevState.time.getTime() - dt;
-            } else {
-                return -1;
-            }
-        }
-    }, {
-        key: 'tick',
-        value: function tick() {
-            this.setState(function (prevState, props) {
-                var stage = prevState.stage;
-                var currTime = new Date();
-                var newTime = this.diffTime(prevState);
-                var dt = prevState.time.getTime() - newTime;
-                var accumulated = prevState.accumulated + dt;
-                var percentage = Math.round(1000 * accumulated / prevState.total);
-                var timestamps = prevState.timestamps;
-                if (!prevState.timestamps.length) {
-                    timestamps.push({ label: "Begin", time: currTime });
-                }
-                if (prevState.time != null && newTime > 0) {
-                    return {
-                        accumulated: accumulated,
-                        percentage: percentage,
-                        timestamps: timestamps,
-                        lastTimestamp: currTime,
-                        time: new Date(newTime)
-                    };
-                } else {
-                    var newTime = prevState.phases[++stage] * 60 * 1000 + newTime;
-                    if (newTime) {
-                        var newLabel = prevState.on ? "Stop: " : "Start: ";
-                        timestamps.push({ label: newLabel, time: currTime });
-                        this.playSound();
-                        return {
-                            accumulated: accumulated,
-                            percentage: percentage,
-                            timestamps: timestamps,
-                            on: !prevState.on,
-                            phases: prevState.phases,
-                            stage: stage,
-                            lastTimestamp: currTime,
-                            time: new Date(newTime)
-                        };
-                    } else {
-                        timestamps.push({ label: "End: ", time: currTime });
-                        clearInterval(this.timerID);
-                        this.playSound();
-                        return {
-                            accumulated: accumulated,
-                            percentage: 1000,
-                            timestamps: timestamps,
-                            lastTimestamp: currTime,
-                            finished: true,
-                            time: new Date(0)
-                        };
-                    }
-                }
-            });
-        }
-    }, {
-        key: 'componentDidMount',
-        value: function componentDidMount() {
-            /*this.timerID = setInterval(
-            () => this.tick(),
-            this.props.tickRate
-            )*/
-        }
-    }, {
-        key: 'componentWillUnmount',
-        value: function componentWillUnmount() {
-            clearInterval(this.timerID);
-        }
-    }, {
-        key: 'toggle',
-        value: function toggle() {
-            var _this3 = this;
+        return {
+          accumulated: accumulated,
+          percentage: 1000,
+          timestamps: timestamps,
+          lastTimestamp: currTime,
+          finished: true,
+          time: new Date(0)
+        };
+      });
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      clearInterval(this.timerID);
+    }
+  }, {
+    key: 'reset',
+    value: function reset() {
+      if (this.timerID) {
+        clearInterval(this.timerID);
+      }
+      this.setState(function () {
+        return {
+          on: true,
+          active: false,
+          accumulated: 0,
+          complete: false,
+          phases: [20, 10, 10, 10, 10],
+          stage: 0,
+          lastTimestamp: new Date(),
+          timestamps: [],
+          time: new Date(20 * 60 * 1000),
+          total: (20 + 10 + 10 + 10 + 10) * 60 * 1000
+        };
+      });
+    }
+  }, {
+    key: 'toggle',
+    value: function toggle() {
+      var _this4 = this;
 
-            this.setState(function (prevState) {
-                var currTime = new Date();
-                var newTime = currTime;
-
-                if (prevState.active) {
-                    var newTime = _this3.diffTime(prevState);
-                    clearInterval(_this3.timerID);
-                    return {
-                        lastTimestamp: currTime,
-                        active: !prevState.active
-                    };
-                } else {
-                    clearInterval(_this3.timerID);
-                    _this3.timerID = setInterval(function () {
-                        return _this3.tick();
-                    }, _this3.props.tickRate);
-                    console.log('Started');
-                    _this3.playSound();
-                    return { lastTimestamp: currTime, active: !prevState.active };
-                }
-            });
+      this.setState(function (prevState) {
+        var currTime = new Date();
+        var timestamps = prevState.timestamps;
+        if (prevState.active) {
+          timestamps.push({ label: 'Paused', time: currTime });
+          clearInterval(_this4.timerID);
+          return { lastTimestamp: currTime, active: !prevState.active, timestamps: timestamps };
         }
-    }, {
-        key: 'render',
-        value: function render() {
-            var hours = padTime(this.state.time.getUTCHours());
-            var minutes = padTime(this.state.time.getUTCMinutes());
-            var seconds = padTime(this.state.time.getUTCSeconds());
-            var milliseconds = padTime(this.state.time.getUTCMilliseconds(), 4);
-            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                'div',
+        clearInterval(_this4.timerID);
+        timestamps.push({ label: 'Resumed', time: currTime });
+        _this4.timerID = setInterval(function () {
+          return _this4.tick();
+        }, _this4.props.tickRate);
+        return { lastTimestamp: currTime, active: !prevState.active, timestamps: timestamps };
+      });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      // const hours = padTime(this.state.time.getUTCHours());
+      var minutes = padTime(this.state.time.getUTCMinutes());
+      var seconds = padTime(this.state.time.getUTCSeconds());
+      // const milliseconds = padTime(this.state.time.getUTCMilliseconds(), 4);
+      return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'div',
+        null,
+        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+          'div',
+          { className: 'row' },
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'div',
+            { className: 'col' },
+            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+              'div',
+              { className: 'jumbotron' },
+              __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                'h1',
                 null,
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ActiveLabel, { on: this.state.on, finished: this.state.finished })
+              ),
+              __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ProgressBar, { percentage: this.state.percentage }),
+              __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                'div',
+                { className: 'card card-outline-secondary' },
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    'div',
-                    { className: 'row' },
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        'div',
-                        { className: 'col' },
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            'div',
-                            { className: 'jumbotron' },
-                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                'h1',
-                                null,
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'span',
-                                    { className: "badge " + (this.state.on && !this.state.finished ? "badge-success" : "badge-danger") },
-                                    this.state.finished ? "FINISHED" : this.state.on ? "ON" : "OFF"
-                                )
-                            ),
-                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ProgressBar, { percentage: this.state.percentage }),
-                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                'div',
-                                { className: 'card card-outline-secondary' },
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'h1',
-                                    { className: 'display-2 border card-block card-title text-center' },
-                                    minutes,
-                                    'm ',
-                                    seconds,
-                                    's'
-                                )
-                            ),
-                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                'div',
-                                { className: 'd-flex flex-row-reverse pt-2' },
-                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                    'button',
-                                    {
-                                        type: 'button',
-                                        className: 'btn btn-primary btn-lg',
-                                        onClick: this.toggle
-                                    },
-                                    this.state.active ? "Pause" : "Start"
-                                )
-                            )
-                        )
-                    ),
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        'div',
-                        { className: 'mt-5 pt-2 col' },
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            'h1',
-                            null,
-                            'Timestamps'
-                        ),
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(TimestampList, { timestamps: this.state.timestamps })
-                    )
+                  'h1',
+                  { className: 'display-2 border card-block card-title text-center' },
+                  minutes,
+                  'm ',
+                  seconds,
+                  's'
                 )
-            );
-        }
-    }]);
+              ),
+              __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                'div',
+                { className: 'd-flex justify-content-between pt-2' },
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ResetButton, { reset: this.reset }),
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(ToggleButton, { toggle: this.toggle, active: this.state.active })
+              )
+            )
+          ),
+          __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+            'div',
+            { className: 'mt-5 pt-2 col' },
+            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+              'h1',
+              null,
+              'Timestamps'
+            ),
+            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(TimestampList, { timestamps: this.state.timestamps })
+          )
+        )
+      );
+    }
+  }]);
 
-    return Timer;
+  return Timer;
 }(__WEBPACK_IMPORTED_MODULE_0_react___default.a.Component);
 
 var app = __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-    'div',
-    null,
-    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Timer, { tickRate: '100' })
+  'div',
+  null,
+  __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Timer, { tickRate: '100' })
 );
-__WEBPACK_IMPORTED_MODULE_1_react_dom___default.a.render(app, document.getElementById("root"));
+
+__WEBPACK_IMPORTED_MODULE_1_react_dom___default.a.render(app, document.getElementById('root'));
 
 /***/ }),
 /* 82 */

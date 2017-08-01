@@ -1,0 +1,19 @@
+{
+    "env": {
+        "browser": true
+    },
+    "extends": "airbnb-base",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true,
+            "modules": true
+        }
+
+    },
+    "plugins": [
+        "react"
+    ],
+    "rules": {
+        "react/jsx-uses-vars": [2]
+    }
+}
