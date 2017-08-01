@@ -9976,7 +9976,9 @@ var Timer = function (_React$Component) {
           return { lastTimestamp: currTime, active: !prevState.active, timestamps: timestamps };
         }
         clearInterval(_this4.timerID);
-        timestamps.push({ label: 'Resumed', time: currTime });
+        if (prevState.timestamps.length > 0 || prevState.time < new Date(20 * 60 * 1000)) {
+          timestamps.push({ label: 'Resumed', time: currTime });
+        }
         _this4.timerID = setInterval(function () {
           return _this4.tick();
         }, _this4.props.tickRate);

@@ -182,7 +182,9 @@ class Timer extends React.Component {
         return { lastTimestamp: currTime, active: !prevState.active, timestamps };
       }
       clearInterval(this.timerID);
-      timestamps.push({ label: 'Resumed', time: currTime });
+      if (prevState.timestamps.length > 0 || prevState.time < new Date(20 * 60 * 1000)) {
+        timestamps.push({ label: 'Resumed', time: currTime });
+      }
       this.timerID = setInterval(() => this.tick(), this.props.tickRate);
       return { lastTimestamp: currTime, active: !prevState.active, timestamps };
     });
