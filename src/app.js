@@ -10,6 +10,21 @@ function diffTime(prevState) {
   return -1;
 }
 
+function padTime(number, length = 2) {
+  return String(number).padStart(length, '0');
+}
+
+function Time(props) {
+  const hours = padTime(props.time.getUTCHours());
+  const minutes = padTime(props.time.getUTCMinutes());
+  const seconds = padTime(props.time.getUTCSeconds());
+  const milliseconds = padTime(props.time.getUTCMilliseconds(), 4);
+  return (<h1 className="display-2 border card-block card-title text-center">
+    {props.hours && <span>{hours}h </span>} {props.minutes && <span>{minutes}m </span>}
+    {props.seconds && <span>{seconds}s </span>} {props.milliseconds && <span>{milliseconds}ms</span>}
+  </h1>);
+}
+
 function ProgressBar(props) {
   return (<div className="mb-1 progress">
     <div className="progress-bar" role="progressbar" style={{ width: `${props.percentage / 10}%` }} aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
@@ -62,10 +77,6 @@ function TimestampList(props) {
   );
 
   return <ul className="list-group">{listItems}</ul>;
-}
-
-function padTime(number, length = 2) {
-  return String(number).padStart(length, '0');
 }
 
 class Timer extends React.Component {
@@ -191,10 +202,6 @@ class Timer extends React.Component {
   }
 
   render() {
-    // const hours = padTime(this.state.time.getUTCHours());
-    const minutes = padTime(this.state.time.getUTCMinutes());
-    const seconds = padTime(this.state.time.getUTCSeconds());
-    // const milliseconds = padTime(this.state.time.getUTCMilliseconds(), 4);
     return (
       <div>
         <div className="row">
@@ -205,9 +212,7 @@ class Timer extends React.Component {
               </h1>
               <ProgressBar percentage={this.state.percentage} />
               <div className="card card-outline-secondary">
-                <h1 className="display-2 border card-block card-title text-center">
-                  {minutes}m {seconds}s
-                </h1>
+                <Time time={this.state.time} minutes seconds/>
               </div>
               <div className="d-flex justify-content-between pt-2">
                 <ResetButton reset={this.reset} />

@@ -9763,6 +9763,49 @@ function diffTime(prevState) {
   return -1;
 }
 
+function padTime(number) {
+  var length = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 2;
+
+  return String(number).padStart(length, '0');
+}
+
+function Time(props) {
+  var hours = padTime(props.time.getUTCHours());
+  var minutes = padTime(props.time.getUTCMinutes());
+  var seconds = padTime(props.time.getUTCSeconds());
+  var milliseconds = padTime(props.time.getUTCMilliseconds(), 4);
+  return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+    'h1',
+    { className: 'display-2 border card-block card-title text-center' },
+    props.hours && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'span',
+      null,
+      hours,
+      'h '
+    ),
+    ' ',
+    props.minutes && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'span',
+      null,
+      minutes,
+      'm '
+    ),
+    props.seconds && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'span',
+      null,
+      seconds,
+      's '
+    ),
+    ' ',
+    props.milliseconds && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+      'span',
+      null,
+      milliseconds,
+      'ms'
+    )
+  );
+}
+
 function ProgressBar(props) {
   return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
     'div',
@@ -9836,12 +9879,6 @@ function TimestampList(props) {
     { className: 'list-group' },
     listItems
   );
-}
-
-function padTime(number) {
-  var length = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 2;
-
-  return String(number).padStart(length, '0');
 }
 
 var Timer = function (_React$Component) {
@@ -9988,10 +10025,6 @@ var Timer = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      // const hours = padTime(this.state.time.getUTCHours());
-      var minutes = padTime(this.state.time.getUTCMinutes());
-      var seconds = padTime(this.state.time.getUTCSeconds());
-      // const milliseconds = padTime(this.state.time.getUTCMilliseconds(), 4);
       return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
         'div',
         null,
@@ -10013,14 +10046,7 @@ var Timer = function (_React$Component) {
               __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 'div',
                 { className: 'card card-outline-secondary' },
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                  'h1',
-                  { className: 'display-2 border card-block card-title text-center' },
-                  minutes,
-                  'm ',
-                  seconds,
-                  's'
-                )
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Time, { time: this.state.time, minutes: true, seconds: true })
               ),
               __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 'div',
